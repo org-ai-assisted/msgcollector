@@ -22,6 +22,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 repo_root="$(git rev-parse --show-toplevel)"
 cd -- "${repo_root}"
@@ -48,8 +50,8 @@ while IFS= read -r script; do
   fi
 
   target="$(basename -- "${script}")"
-  ln -snf -- "${target}" "${link}"
+  ln -s -n -f -- "${target}" "${link}"
   linked=$((linked + 1))
 done < <(git ls-files)
 
-printf 'python-prepare: linked=%d skipped=%d\n' "${linked}" "${skipped}"
+printf '%s\n' "python-prepare: linked=${linked} skipped=${skipped}"
