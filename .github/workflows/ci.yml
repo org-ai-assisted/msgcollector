@@ -7,6 +7,12 @@ on:
   push:
   pull_request:
 
+## Top-level least-privilege cap (OSSF Scorecard Token-Permissions).
+## All four jobs (shellcheck, python-lint, unit-tests, integration-tests)
+## only checkout + run linters/tests; no API writes needed.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
