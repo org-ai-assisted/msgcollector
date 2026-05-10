@@ -23,6 +23,19 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare apt cache directory
+        run: |
+          sudo mkdir -p /var/cache/apt/archives
+          sudo chown -R "$(id -u):$(id -g)" /var/cache/apt/archives
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-ci-shellcheck-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-ci-shellcheck-
+
       - name: Install ShellCheck
         run: sudo apt-get update && sudo apt-get install -y shellcheck
 
@@ -110,6 +123,19 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Prepare apt cache directory
+        run: |
+          sudo mkdir -p /var/cache/apt/archives
+          sudo chown -R "$(id -u):$(id -g)" /var/cache/apt/archives
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-ci-tests-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-ci-tests-
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -161,6 +187,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Prepare apt cache directory
+        run: |
+          sudo mkdir -p /var/cache/apt/archives
+          sudo chown -R "$(id -u):$(id -g)" /var/cache/apt/archives
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-ci-tests-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-ci-tests-
 
       - name: Install system dependencies
         run: |
