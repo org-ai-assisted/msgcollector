@@ -50,7 +50,13 @@ def select_qt_platform(environ):
     in place: when QT_QPA_PLATFORM is already pinned (e.g. by
     sandbox-update-torbrowser) or when this is not a Wayland session.
     """
-    if not environ.get("QT_QPA_PLATFORM") and environ.get("WAYLAND_DISPLAY"):
+    if environ.get("QT_QPA_PLATFORM"):
+        return None
+    ## A Wayland session is signalled by WAYLAND_DISPLAY, or by
+    ## XDG_SESSION_TYPE=wayland even with WAYLAND_DISPLAY unset (libwayland then
+    ## defaults to the "wayland-0" socket) -- msgdispatcher routes both to the
+    ## GUI path, so both must get the fallback.
+    if environ.get("WAYLAND_DISPLAY") or environ.get("XDG_SESSION_TYPE") == "wayland":
         return "wayland;xcb"
     return None
 
