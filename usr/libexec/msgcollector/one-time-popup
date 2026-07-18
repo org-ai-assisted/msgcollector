@@ -30,6 +30,7 @@ https://forums.whonix.org/t/do-not-show-this-message-again-generic-one-time-popu
 """
 
 import argparse
+import os
 import sys
 import signal
 import subprocess
@@ -167,6 +168,24 @@ def show_passive_popup(status_path: Path, title: str, message: str) -> None:
     sys.exit(0)
 
 
+def select_qt_platform(environ):
+    """Choose a Qt QPA platform for a Wayland session when none is pinned.
+
+    Qt5 defaults to the "xcb" platform even inside a Wayland session. When
+    no X server (or XWayland) is reachable -- for example this dialog is
+    launched from a .desktop shortcut on a Wayland-only Kicksecure/Whonix
+    session -- xcb aborts the process with no window. Prefer Wayland with an
+    xcb fallback so the dialog appears under both session types.
+
+    Returns the platform string to set, or None to leave Qt's own default
+    in place: when QT_QPA_PLATFORM is already pinned or when this is not a
+    Wayland session.
+    """
+    if not environ.get("QT_QPA_PLATFORM") and environ.get("WAYLAND_DISPLAY"):
+        return "wayland;xcb"
+    return None
+
+
 def main() -> NoReturn:
     """
     Main function.
@@ -228,6 +247,10 @@ def main() -> NoReturn:
     if args.passive:
         show_passive_popup(status_path, args.title, args.message)
     else:
+        qt_platform = select_qt_platform(os.environ)
+        if qt_platform:
+            os.environ["QT_QPA_PLATFORM"] = qt_platform
+
         app: QtWidgets.QApplication = QtWidgets.QApplication(sys.argv)
 
         ## Hack to get the signal handler to trigger when a signal is received
