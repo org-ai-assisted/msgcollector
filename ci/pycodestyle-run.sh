@@ -30,12 +30,12 @@ if [ "${CI:-}" != "true" ]; then
 fi
 
 readonly files=(
-   usr/libexec/msgcollector/alert
-   usr/libexec/msgcollector/generic_gui_message
-   usr/libexec/msgcollector/msgdispatcher_dispatch_x
-   usr/libexec/msgcollector/one-time-popup
-   usr/libexec/msgcollector/tb_updater_gui
-   usr/libexec/msgcollector/br_add
+   usr/libexec/msgcollector/alert.py
+   usr/libexec/msgcollector/generic_gui_message.py
+   usr/libexec/msgcollector/msgdispatcher_dispatch_x.py
+   usr/libexec/msgcollector/one-time-popup.py
+   usr/libexec/msgcollector/tb_updater_gui.py
+   usr/libexec/msgcollector/br_add.py
 )
 
 exit_code=0
