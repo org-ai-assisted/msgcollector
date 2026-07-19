@@ -29,14 +29,7 @@ if [ "${CI:-}" != "true" ]; then
    exit 1
 fi
 
-readonly files=(
-   usr/libexec/msgcollector/alert.py
-   usr/libexec/msgcollector/generic_gui_message.py
-   usr/libexec/msgcollector/msgdispatcher_dispatch_x.py
-   usr/libexec/msgcollector/one-time-popup.py
-   usr/libexec/msgcollector/tb_updater_gui.py
-   usr/libexec/msgcollector/br_add.py
-)
+readonly files=(usr/libexec/msgcollector/*.py)
 
 exit_code=0
 for file_name in "${files[@]}"; do

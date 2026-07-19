@@ -6,10 +6,7 @@
 ## AI-Assisted
 
 ## CI helper: run pyflakes across the project's installable Python
-## scripts. They live at usr/libexec/msgcollector/ with no
-## extension (Debian libexec convention) so pyflakes' default
-## glob discovery does not find them; the file list is enumerated
-## here explicitly.
+## scripts under usr/libexec/msgcollector/ (the <name>.py files).
 
 set -o errexit
 set -o nounset
@@ -25,14 +22,7 @@ if [ "${CI:-}" != "true" ]; then
    exit 1
 fi
 
-readonly files=(
-   usr/libexec/msgcollector/alert.py
-   usr/libexec/msgcollector/generic_gui_message.py
-   usr/libexec/msgcollector/msgdispatcher_dispatch_x.py
-   usr/libexec/msgcollector/one-time-popup.py
-   usr/libexec/msgcollector/tb_updater_gui.py
-   usr/libexec/msgcollector/br_add.py
-)
+readonly files=(usr/libexec/msgcollector/*.py)
 
 exit_code=0
 for file_name in "${files[@]}"; do
