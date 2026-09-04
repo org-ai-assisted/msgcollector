@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
 
 ## Copyright (C) 2014 troubadour <trobador@riseup.net>
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -39,6 +39,7 @@ from typing import NoReturn
 from types import FrameType
 
 from PyQt5 import QtCore, QtWidgets, QtGui
+from guimessages.display import exit_if_no_gui
 
 
 class PopupWindow(QtWidgets.QDialog):
@@ -228,6 +229,10 @@ def main() -> NoReturn:
     if args.passive:
         show_passive_popup(status_path, args.title, args.message)
     else:
+        ## Headless (no display): exit cleanly instead of letting QApplication
+        ## abort with SIGABRT. Shared guard, see guimessages.display.
+        exit_if_no_gui()
+
         app: QtWidgets.QApplication = QtWidgets.QApplication(sys.argv)
 
         ## Hack to get the signal handler to trigger when a signal is received
