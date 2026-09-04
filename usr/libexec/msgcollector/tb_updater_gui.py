@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
 
 ## Copyright (C) 2014 troubadour <trobador@riseup.net>
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -29,6 +29,8 @@ import signal
 import argparse
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore, QtGui, QtWidgets
+from guimessages.display import exit_if_no_gui
+from sanitize_string.sanitize_string_lib import sanitize_string
 
 
 def signal_handler(sig, frame):
@@ -90,8 +92,12 @@ class GuiMessage(QtWidgets.QDialog):
         image = QtGui.QImage(itype)
         self.i_label.setPixmap(QPixmap.fromImage(image))
         self.i_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        ## Sanitize the version: it is caller-supplied and interpolated into a
+        ## rich-text label. sanitize_string strips markup AND control/ANSI/escape
+        ## bytes (html.escape neutralizes only markup), so it cannot spoof the
+        ## version shown in the download-confirmation dialog.
         self.label.setText('<p><b>Download confirmation</b></p>\
-                            <p>Currently installed version: <code>%s</code></p>' % self.installed_version)
+                            <p>Currently installed version: <code>%s</code></p>' % sanitize_string(self.installed_version))
         self.label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
@@ -103,8 +109,11 @@ class GuiMessage(QtWidgets.QDialog):
             self.version = QtWidgets.QRadioButton(self.version_group)
             if i == 0:
                 self.version.setChecked(True)
+            ## Name keeps the raw value (printed to stdout on selection); the
+            ## displayed text is sanitized (markup + control/ANSI stripped) so
+            ## caller-supplied content cannot spoof the version list.
             self.version.Name = version
-            self.version.setText(version)
+            self.version.setText(sanitize_string(version))
             self.version.setGeometry(QtCore.QRect(10, i * 20 + 20, 510, 21))
             i += 1
 
@@ -140,8 +149,6 @@ class GuiMessage(QtWidgets.QDialog):
         self.center()
 
         QtCore.QTimer.singleShot(0, self.setSize)
-
-        self.exec_()
 
     def reject(self):
         print("65536")
@@ -197,6 +204,10 @@ def main():
 
     args = parser.parse_args()
 
+    ## Headless (no display): exit cleanly instead of letting QApplication abort
+    ## with SIGABRT. Shared guard, see guimessages.display.
+    exit_if_no_gui()
+
     app = QtWidgets.QApplication(sys.argv)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
@@ -205,9 +216,12 @@ def main():
     timer.start(500)
     timer.timeout.connect(lambda: None)
 
+    ## Single event loop: show the dialog and run app.exec_(). The OK button's
+    ## accept() then ends this loop (last window closed) and the process exits;
+    ## the yes/no handlers sys.exit() directly.
     message = GuiMessage(args)
-    if message is not None:
-        app.exec_()
+    message.show()
+    app.exec_()
 
 
 if __name__ == '__main__':
