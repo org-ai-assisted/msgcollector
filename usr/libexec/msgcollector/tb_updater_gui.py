@@ -25,6 +25,7 @@ Example:
 
 import os
 import sys
+import html
 import signal
 import argparse
 from PyQt5.QtGui import QIcon, QPixmap
@@ -91,8 +92,11 @@ class GuiMessage(QtWidgets.QDialog):
         image = QtGui.QImage(itype)
         self.i_label.setPixmap(QPixmap.fromImage(image))
         self.i_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        ## Escape the version: it is caller-supplied and interpolated into a
+        ## rich-text label, where unescaped markup could spoof the version shown
+        ## in the download-confirmation dialog.
         self.label.setText('<p><b>Download confirmation</b></p>\
-                            <p>Currently installed version: <code>%s</code></p>' % self.installed_version)
+                            <p>Currently installed version: <code>%s</code></p>' % html.escape(self.installed_version))
         self.label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
@@ -104,8 +108,11 @@ class GuiMessage(QtWidgets.QDialog):
             self.version = QtWidgets.QRadioButton(self.version_group)
             if i == 0:
                 self.version.setChecked(True)
+            ## Name keeps the raw value (printed to stdout on selection); the
+            ## displayed text is escaped so caller-supplied markup cannot spoof
+            ## the version list in the confirmation dialog.
             self.version.Name = version
-            self.version.setText(version)
+            self.version.setText(html.escape(version))
             self.version.setGeometry(QtCore.QRect(10, i * 20 + 20, 510, 21))
             i += 1
 
@@ -141,8 +148,6 @@ class GuiMessage(QtWidgets.QDialog):
         self.center()
 
         QtCore.QTimer.singleShot(0, self.setSize)
-
-        self.exec_()
 
     def reject(self):
         print("65536")
@@ -210,9 +215,12 @@ def main():
     timer.start(500)
     timer.timeout.connect(lambda: None)
 
+    ## Single event loop: show the dialog and run app.exec_(). The OK button's
+    ## accept() then ends this loop (last window closed) and the process exits;
+    ## the yes/no handlers sys.exit() directly.
     message = GuiMessage(args)
-    if message is not None:
-        app.exec_()
+    message.show()
+    app.exec_()
 
 
 if __name__ == '__main__':
