@@ -25,12 +25,12 @@ Example:
 
 import os
 import sys
-import html
 import signal
 import argparse
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore, QtGui, QtWidgets
 from guimessages.display import exit_if_no_gui
+from sanitize_string.sanitize_string_lib import sanitize_string
 
 
 def signal_handler(sig, frame):
@@ -92,11 +92,12 @@ class GuiMessage(QtWidgets.QDialog):
         image = QtGui.QImage(itype)
         self.i_label.setPixmap(QPixmap.fromImage(image))
         self.i_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        ## Escape the version: it is caller-supplied and interpolated into a
-        ## rich-text label, where unescaped markup could spoof the version shown
-        ## in the download-confirmation dialog.
+        ## Sanitize the version: it is caller-supplied and interpolated into a
+        ## rich-text label. sanitize_string strips markup AND control/ANSI/escape
+        ## bytes (html.escape neutralizes only markup), so it cannot spoof the
+        ## version shown in the download-confirmation dialog.
         self.label.setText('<p><b>Download confirmation</b></p>\
-                            <p>Currently installed version: <code>%s</code></p>' % html.escape(self.installed_version))
+                            <p>Currently installed version: <code>%s</code></p>' % sanitize_string(self.installed_version))
         self.label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
@@ -109,10 +110,10 @@ class GuiMessage(QtWidgets.QDialog):
             if i == 0:
                 self.version.setChecked(True)
             ## Name keeps the raw value (printed to stdout on selection); the
-            ## displayed text is escaped so caller-supplied markup cannot spoof
-            ## the version list in the confirmation dialog.
+            ## displayed text is sanitized (markup + control/ANSI stripped) so
+            ## caller-supplied content cannot spoof the version list.
             self.version.Name = version
-            self.version.setText(html.escape(version))
+            self.version.setText(sanitize_string(version))
             self.version.setGeometry(QtCore.QRect(10, i * 20 + 20, 510, 21))
             i += 1
 
