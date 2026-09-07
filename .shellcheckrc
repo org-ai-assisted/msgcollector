@@ -1,0 +1,15 @@
+## ShellCheck configuration for the msgcollector package.
+##
+## Mirrors the derivative-maker project policy: msgcollector scripts source
+## helper-scripts' get_colors.sh (and siblings), which define many variables at
+## runtime from computed paths. ShellCheck cannot follow those sources when a
+## staged file is checked in isolation, so it trips on vars it cannot see.
+##
+##   SC2154 - vars referenced but not assigned (defined in the sourced files).
+##   SC2034 - vars assigned but "unused" (read by a sourced child script).
+##   SC1090 - "Can't follow non-constant source" (paths from HELPER_SCRIPTS_PATH).
+##   SC1091 - "Not following: file not included" (same reason).
+disable=SC2154
+disable=SC2034
+disable=SC1090
+disable=SC1091
