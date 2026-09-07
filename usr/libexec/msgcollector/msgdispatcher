@@ -20,11 +20,11 @@ verbose=""
 ## Sourced here rather than with the other helper-scripts near the bottom of
 ## this file: preparation() and the passive-popup dispatch below both run
 ## before that point.
-# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.sh
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.bsh
 ## Sibling repo: absent in an isolated CI checkout. No inline SC1091 disable
 ## needed -- the CI shellcheck excludes SC1091, and a full-tree run resolves the
 ## source= path above.
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.bsh"
 #trap 'sleep 1' DEBUG
 
 ## Bound the best-effort filesystem ops in error_handler, so a stuck home dir
