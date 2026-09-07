@@ -373,7 +373,7 @@ colors() {
    trap "error_handler" ERR
 
    if [ ! "${TERM:-}" = "" ]; then
-      ASSUME_TERM_PRESENT=true
+      COLOR_FORCE_YES=true
    fi
    source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/get_colors.sh"
    get_colors
@@ -553,7 +553,7 @@ stdisplay_message() {
    ## Sanitize a CLI message from stdin with stdisplay (stcat): drop non-ASCII
    ## and every dangerous (non-SGR) escape, keep only a safe SGR subset. Honor
    ## msgcollector's OWN color decision: get_colors (via colors()'s
-   ## ASSUME_TERM_PRESENT) can enable color where stdisplay's own NO_COLOR /
+   ## COLOR_FORCE_YES) can enable color where stdisplay's own NO_COLOR /
    ## TERM=dumb defaults would disable SGR. If they disagreed, stdisplay would
    ## replace only the ESC of a color we just inserted and leave visible '[..m'
    ## debris. So when color is on (${green} set) force stdisplay to allow SGR
