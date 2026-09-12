@@ -39,6 +39,7 @@ verbose=""
 ## clean exit aborted instead.
 yad_progress_pid=""
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/light_sleep.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/light_sleep.bsh"
 
 scriptname="$(basename -- "${BASH_SOURCE[0]}")"
@@ -317,13 +318,16 @@ trap "output_sighup" SIGHUP
 trap "output_sigterm" SIGTERM
 trap "output_sigint" SIGINT
 
+# shellcheck source=./usr/libexec/msgcollector/msgcollector_shared
 source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
 ## sets: ${msgcollector_run_dir}
 folder_init
 
 ## provides: msgcollector_check, is_whole_number
+# shellcheck source=./usr/libexec/msgcollector/check
 source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/check"
 
+# shellcheck source=./usr/libexec/msgcollector/msgfallbacks
 source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgfallbacks"
 fallbacks ## provided by /usr/libexec/msgcollector/msgfallbacks
 parse_cmd_options "$@"

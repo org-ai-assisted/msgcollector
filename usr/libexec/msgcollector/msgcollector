@@ -931,11 +931,13 @@ main() {
 
    parse_cmd_options "$@"
 
+   # shellcheck source=./usr/libexec/msgcollector/msgcollector_shared
    source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
    ## sets: ${msgcollector_run_dir}
    folder_init
 
    ## provides: msgcollector_check, is_whole_number
+   # shellcheck source=./usr/libexec/msgcollector/check
    source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/check"
 
    if [ "${forget}" = "1" ]; then

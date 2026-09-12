@@ -441,11 +441,14 @@ msgdispatcher_loop() {
    done
 }
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/light_sleep.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/light_sleep.bsh"
 
 ## sets: systemd_notify
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/systemd-notify.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/systemd-notify.bsh"
 
 ## sets: ${msgcollector_run_dir}
