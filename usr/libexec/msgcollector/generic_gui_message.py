@@ -27,7 +27,6 @@ import signal
 import argparse
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
-from guimessages.display import exit_if_no_gui
 
 
 class SafeTextBrowser(QtWidgets.QTextBrowser):
@@ -171,10 +170,6 @@ def main():
     parser.add_argument('button_type', choices=['ok', 'yesno'], help="Type of the button ('ok' for a single OK button, 'yesno' for Yes and No buttons)")
 
     args = parser.parse_args()
-
-    ## Headless (no display): exit cleanly instead of letting QApplication abort
-    ## with SIGABRT. Shared with the other GUI helpers, see the module docstring.
-    exit_if_no_gui()
 
     app = QtWidgets.QApplication(sys.argv)
     signal.signal(signal.SIGINT, signal_handler)

@@ -30,7 +30,6 @@ import signal
 import argparse
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore, QtGui, QtWidgets
-from guimessages.display import exit_if_no_gui
 
 
 class SafeTextBrowser(QtWidgets.QTextBrowser):
@@ -159,11 +158,6 @@ def main():
 
     if not os.path.exists(args.itype):
         print(f"INFO: The icon path '{args.itype}' does not exist.", file=sys.stderr)
-
-    ## Headless (no display): exit cleanly instead of letting QApplication abort
-    ## with SIGABRT. Placed after the stdin drain above so the caller's write
-    ## does not get SIGPIPE. Shared guard, see guimessages.display.
-    exit_if_no_gui()
 
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
