@@ -10,12 +10,13 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 verbose=""
 
 ## sets: has
-# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.bsh"
 #trap 'sleep 1' DEBUG
 
 timeout_command=("timeout" "--kill-after" "1" "2")

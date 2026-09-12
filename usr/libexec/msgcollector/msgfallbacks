@@ -14,8 +14,8 @@
 ## every later call to those names reaches these bodies.
 # shellcheck disable=SC2317
 
-# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.bsh"
 
 fallbacks() {
    trap "error_handler" ERR
