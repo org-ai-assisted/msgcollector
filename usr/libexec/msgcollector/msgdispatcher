@@ -229,23 +229,29 @@ dispatch_x_active() {
    fi
 }
 
+msgdispatcher_passive_type_icon() {
+   ## Map a passive-popup type to a freedesktop icon name, so the popup shows
+   ## its severity like the active dialog does. Unknown types fall back to info.
+   case "$1" in
+      error)
+         printf '%s' 'dialog-error'
+         ;;
+      warning)
+         printf '%s' 'dialog-warning'
+         ;;
+      *)
+         printf '%s' 'dialog-information'
+         ;;
+   esac
+}
+
 dispatch_x_passive() {
    local type title msg icon
    type="${1:-}"
    title="${2:-}"
    msg="${3:-}"
 
-   case "${type}" in
-      error)
-         icon='dialog-error'
-         ;;
-      warning)
-         icon='dialog-warning'
-         ;;
-      *)
-         icon='dialog-information'
-         ;;
-   esac
+   icon="$(msgdispatcher_passive_type_icon "${type}")"
 
    passive_popup_tool "20" "${title}" "${msg}" "${icon}"
 }

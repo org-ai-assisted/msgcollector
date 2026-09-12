@@ -200,14 +200,12 @@ output_sigterm() {
 }
 
 start_progress_bar() {
-   ## An empty title or message is always a bug. It should show up somewhere
-   ## user-visible so we or someone else notices it.
-   if [ "${message}" = "" ]; then
-      message="Progress bar message is empty. Please report this bug!"
-   fi
-
+   ## An empty title/message is a caller omission, not a user-actionable bug:
+   ## never surface an alarming "report this bug" popup. Title falls back to the
+   ## identifier (msgcollector_check validates it non-empty); an empty message
+   ## renders cleanly in yad, so leave it as-is.
    if [ "${progressbartitlex}" = "" ]; then
-      progressbartitlex="Variable progressbartitlex is empty. Please report this bug!"
+      progressbartitlex="${identifier}"
    fi
 
    if [ -f "${msgcollector_run_dir}/${identifier}_icon" ]; then
