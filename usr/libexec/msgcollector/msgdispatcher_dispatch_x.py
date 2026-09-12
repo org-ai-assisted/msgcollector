@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -Bsu
 
 ## Copyright (C) 2014 troubadour <trobador@riseup.net>
 ## Copyright (C) 2014 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -30,6 +30,7 @@ import signal
 import argparse
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore, QtGui, QtWidgets
+from guimessages.check_display import exit_if_no_gui
 
 
 class SafeTextBrowser(QtWidgets.QTextBrowser):
@@ -158,6 +159,12 @@ def main():
 
     if not os.path.exists(args.itype):
         print(f"INFO: The icon path '{args.itype}' does not exist.", file=sys.stderr)
+
+    ## Headless (no display): decline cleanly instead of letting QApplication
+    ## abort with SIGABRT (exit 134), which a caller under set -e misreads as a
+    ## script bug. Placed after the stdin drain so the caller's write is fully
+    ## consumed first (no SIGPIPE). Shared guard, see guimessages.check_display.
+    exit_if_no_gui()
 
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()

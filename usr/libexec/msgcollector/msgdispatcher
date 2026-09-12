@@ -10,12 +10,13 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 verbose=""
 
 ## sets: has
-# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.sh
-source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.sh"
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/has.bsh
+source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/has.bsh"
 #trap 'sleep 1' DEBUG
 
 timeout_command=("timeout" "--kill-after" "1" "2")
@@ -58,7 +59,7 @@ error_handler() {
    ## Popup window with the message above.
    ## /usr/share/icons/icon-pack-dist/whonix.ico might not exist, but
    ## fortunately msgdispatcher_dispatch_x works anyway.
-   printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "warning" "$0" "0" "/usr/share/icons/icon-pack-dist/whonix.ico" &
+   printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "warning" "$0" "0" "/usr/share/icons/icon-pack-dist/whonix.ico" &
 
    true
 }
@@ -220,12 +221,28 @@ dispatch_x_active() {
    fi
 
    if [ "${verbose}" = "1" ]; then
-      printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}"
+      printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}"
    else
       ## Launching into background, so it doesn't block msgdispatcher until
       ## msgdispatcher_dispatch_x exits.
-      printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}" &
+      printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}" &
    fi
+}
+
+msgdispatcher_passive_type_icon() {
+   ## Map a passive-popup type to a freedesktop icon name, so the popup shows
+   ## its severity like the active dialog does. Unknown types fall back to info.
+   case "$1" in
+      error)
+         printf '%s' 'dialog-error'
+         ;;
+      warning)
+         printf '%s' 'dialog-warning'
+         ;;
+      *)
+         printf '%s' 'dialog-information'
+         ;;
+   esac
 }
 
 dispatch_x_passive() {
@@ -234,17 +251,7 @@ dispatch_x_passive() {
    title="${2:-}"
    msg="${3:-}"
 
-   case "${type}" in
-      error)
-         icon='dialog-error'
-         ;;
-      warning)
-         icon='dialog-warning'
-         ;;
-      *)
-         icon='dialog-information'
-         ;;
-   esac
+   icon="$(msgdispatcher_passive_type_icon "${type}")"
 
    passive_popup_tool "20" "${title}" "${msg}" "${icon}"
 }
@@ -434,20 +441,23 @@ msgdispatcher_loop() {
    done
 }
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/light_sleep.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/light_sleep.bsh"
 
 ## sets: systemd_notify
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/systemd-notify.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/systemd-notify.bsh"
 
 ## sets: ${msgcollector_run_dir}
 # shellcheck source=./usr/libexec/msgcollector/msgcollector_shared
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector_shared"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
 folder_init
 
 # shellcheck source=./usr/libexec/msgcollector/msgfallbacks
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgfallbacks"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgfallbacks"
 
 parse_cmd_options "$@"
 msgdispatcher_loop

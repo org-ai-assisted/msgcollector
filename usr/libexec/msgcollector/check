@@ -13,6 +13,7 @@
 ## provides: validate_safe_filename
 ## provides: is_whole_number
 ## provides: read_integer_file
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
 
 msgcollector_check() {

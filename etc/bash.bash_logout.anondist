@@ -3,6 +3,8 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict - sourced on logout.
+
 ## /etc/bash.bash_logout
 
 ## Terminate msgdispatcher --cli when logging out from tty1.
@@ -16,8 +18,8 @@ if [ ! "$(tty)" = "/dev/tty1" ]; then
 else
    if [ -f "${msgcollector_run_dir}/msgdispatcher_pidcli" ]; then
       pid="$(cat "${msgcollector_run_dir}/msgdispatcher_pidcli")"
-      if [ ! "$pid" = "" ]; then
-         kill -s sigterm "$pid"
+      if [ ! "${pid}" = "" ]; then
+         kill -s sigterm "${pid}"
       fi
    fi
 fi

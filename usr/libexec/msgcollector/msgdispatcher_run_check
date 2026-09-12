@@ -6,6 +6,7 @@
 ## style-ok: no-strict
 ## No strict-mode preamble: this file is SOURCED, never executed.
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/strings.bsh
 source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/strings.bsh"
 
 msgdispatcher_pid_check() {
@@ -31,16 +32,19 @@ msgdispatcher_pid_check() {
 }
 
 msgdispatcher_run_check() {
-   source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector_shared"
+   # shellcheck source=./usr/libexec/msgcollector/msgcollector_shared
+   source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
    ## sets: ${msgcollector_run_dir}
    folder_init
 
-   ## systemcheck sets GUI / CLI variables
+   ## systemcheck sets GUI / CLI variables (external entrypoint globals).
+   # shellcheck disable=SC2154
    if [ "${GUI}" = "true" ]; then
       if msgdispatcher_pid_check "gui" ; then
          msgdispatcher_running_x="true"
       fi
    fi
+   # shellcheck disable=SC2154
    if [ "${CLI}" = "true" ]; then
       if msgdispatcher_pid_check "cli" ; then
          msgdispatcher_running_cli="true"
@@ -64,9 +68,14 @@ msgdispatcher_init() {
    #arg_max_bytes=138300
    arg_max_bytes=32768
 
-   output_tool="${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector"
+   output_tool="${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector"
+   ## Dispatch function NAMES, invoked via '$output_x' from error_handler (a
+   ## separate file); shellcheck cannot see that cross-file indirection.
+   # shellcheck disable=SC2034
    output_general="output_func_general"
+   # shellcheck disable=SC2034
    output_x="output_func_x"
+   # shellcheck disable=SC2034
    output_cli="output_func_cli"
    msgdispatcher_wait
 }
@@ -104,6 +113,8 @@ output_func_cli() {
    output_func --onlyecho "$@"
 }
 
+## output_func_verbose / IDENTIFIER are set by the calling entrypoint (systemcheck).
+# shellcheck disable=SC2154
 output_func_core() {
    if [ "${output_func_verbose}" = "true" ]; then
       printf '%s\n' "Running: bash -x ${output_tool} --identifier ${IDENTIFIER} ${1+$@}"
