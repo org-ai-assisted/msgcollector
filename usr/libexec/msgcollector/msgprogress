@@ -9,6 +9,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 ## Every command-line option target. Each is assigned only when its option is
 ## given, and the required ones are handed straight to check(), whose job is to
@@ -117,7 +118,7 @@ safe_file_write() {
   ## literal so the value is passed as an ARGUMENT rather than interpolated
   ## into the code it runs.
   # shellcheck disable=SC2016
-  timeout 1 /bin/bash -c 'printf "%s\n" "$1"' -- "$1" > "$2"
+  timeout --kill-after=1 1 /bin/bash -c 'printf "%s\n" "$1"' -- "$1" > "$2"
 }
 
 progress_bar() {
@@ -168,12 +169,12 @@ progress_bar() {
    return 0
 }
 
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector_shared"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
 ## sets: ${msgcollector_run_dir}
 folder_init
 
 ## provides: msgcollector_check, is_whole_number
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/check"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/check"
 
 parse_cmd_options "$@"
 

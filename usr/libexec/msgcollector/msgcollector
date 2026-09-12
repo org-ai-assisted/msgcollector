@@ -345,7 +345,7 @@ colors() {
    trap "error_handler" ERR
 
    if [ ! "${TERM:-}" = "" ]; then
-      # shellcheck disable=SC2034  ## read by the sourced get_colors.sh
+      ## Read by the sourced get_colors.sh (force color when a TERM is set).
       COLOR_FORCE_YES=true
    fi
    # shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/get_colors.sh
@@ -664,10 +664,10 @@ collector() {
       #printf '%s\n' "msgcollector: progressx: $progressx | caller: $PPID | $caller" >> /home/user/progresslog
 
       if [ "${verbose}" = "1" ]; then
-         bash -x "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgprogress" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progress "${progressx}"
+         bash -x "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgprogress" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progress "${progressx}"
       else
          ## & disown to prevent long waiting.
-         "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgprogress" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progress "${progressx}" & disown
+         "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgprogress" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progress "${progressx}" & disown
       fi
    fi
    ## }}
@@ -696,7 +696,7 @@ collector() {
       append_to_file
 
       ## Cannot run from msgdispatcher due to user mismatch permission issues.
-      "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgprogressbar" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progressbartitlex "${progressbartitlex}" --message "${message}" & disown
+      "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgprogressbar" --identifier "${identifier}" --progressbaridx "${progressbaridx}" --progressbartitlex "${progressbartitlex}" --message "${message}" & disown
    fi
    ## }}
 }
@@ -931,12 +931,12 @@ main() {
 
    parse_cmd_options "$@"
 
-   source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector_shared"
+   source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
    ## sets: ${msgcollector_run_dir}
    folder_init
 
    ## provides: msgcollector_check, is_whole_number
-   source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/check"
+   source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/check"
 
    if [ "${forget}" = "1" ]; then
       forget

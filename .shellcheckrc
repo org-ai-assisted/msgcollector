@@ -7,8 +7,11 @@
 ## false positives; real dead code is removed at the source instead.
 ##
 ##   SC2154 - var referenced but not assigned (assigned in a sourced file).
+##   SC2034 - var assigned but "unused": read cross-file, incl. command-name
+##            indirection (error_handler runs '$output_x'/'$output_cli').
 ##   SC1090 - cannot follow a non-constant source (HELPER_SCRIPTS_PATH path).
 ##   SC1091 - not following: sourced file absent in the isolated checkout.
 disable=SC2154
+disable=SC2034
 disable=SC1090
 disable=SC1091

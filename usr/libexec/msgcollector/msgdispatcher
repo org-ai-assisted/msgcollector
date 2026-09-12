@@ -59,7 +59,7 @@ error_handler() {
    ## Popup window with the message above.
    ## /usr/share/icons/icon-pack-dist/whonix.ico might not exist, but
    ## fortunately msgdispatcher_dispatch_x works anyway.
-   printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "warning" "$0" "0" "/usr/share/icons/icon-pack-dist/whonix.ico" &
+   printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "warning" "$0" "0" "/usr/share/icons/icon-pack-dist/whonix.ico" &
 
    true
 }
@@ -221,11 +221,11 @@ dispatch_x_active() {
    fi
 
    if [ "${verbose}" = "1" ]; then
-      printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}"
+      printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}"
    else
       ## Launching into background, so it doesn't block msgdispatcher until
       ## msgdispatcher_dispatch_x exits.
-      printf '%s' "${msg}" | "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}" &
+      printf '%s' "${msg}" | "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgdispatcher_dispatch_x.py" -- "${type}" "${title}" "0" "${icon}" &
    fi
 }
 
@@ -444,11 +444,11 @@ source "${HELPER_SCRIPTS_PATH:-}/usr/libexec/helper-scripts/systemd-notify.bsh"
 
 ## sets: ${msgcollector_run_dir}
 # shellcheck source=./usr/libexec/msgcollector/msgcollector_shared
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgcollector_shared"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgcollector_shared"
 folder_init
 
 # shellcheck source=./usr/libexec/msgcollector/msgfallbacks
-source "${MSGCOLLECTOR_PATH:-}/usr/libexec/msgcollector/msgfallbacks"
+source "${MSGCOLLECTOR_REPO:-}/usr/libexec/msgcollector/msgfallbacks"
 
 parse_cmd_options "$@"
 msgdispatcher_loop
