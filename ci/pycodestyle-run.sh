@@ -21,6 +21,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 ## Refuse outside CI unless ALLOW_LOCAL=true is set explicitly (matches
 ## derivative-maker/ci/lint-*), so the sanctioned local runner can override.

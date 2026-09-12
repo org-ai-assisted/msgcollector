@@ -9,6 +9,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 if [ "${pv_wrapper_debug:-}" = 'true' ]; then
    set -x
@@ -35,7 +36,10 @@ while read -r line; do
    fi
    # shellcheck disable=SC2034
    percent="${line}"
+   ## pv_echo_command / pv_wrapper_command are set by the calling script.
+   # shellcheck disable=SC2154
    eval "${pv_echo_command}"
+   # shellcheck disable=SC2154
    eval "${pv_wrapper_command}"
 done
 

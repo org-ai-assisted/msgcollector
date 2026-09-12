@@ -3,20 +3,26 @@
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## style-ok: no-strict - sourced fragment.
+
+## error_handler operates on globals the sourcing script provides (SCRIPTNAME,
+## identifier, IDENTIFIER, output_x/output_cli/output_opts) and sets flags the
+## caller consumes (BUG, SIGNAL_TYPE); shellcheck sees neither side.
+# shellcheck disable=SC2154,SC2034
 error_handler() {
    local exit_code="$?"
 
-   bash_command_backup="$BASH_COMMAND"
+   bash_command_backup="${BASH_COMMAND}"
    BUG="1"
 
    local error_cause error_text
    error_text="$1"
-   if [ "$error_text" = "" ]; then
+   if [ "${error_text}" = "" ]; then
       error_cause="${FUNCNAME[0]} signal ERR detected with BASH_COMMAND:
-$bash_command_backup"
+${bash_command_backup}"
    else
       error_cause="${FUNCNAME[0]} called with error_text:
-$error_text"
+${error_text}"
    fi
 
    ## Note that msgcollector itself doesn't support --debug, but that's OK
@@ -24,38 +30,38 @@ $error_text"
    ## to support this option.
    if [ -f /usr/share/whonix/marker ]; then
       local MSG="<p>###############################################################################
-<br></br>## $SCRIPTNAME script bug.
+<br></br>## ${SCRIPTNAME} script bug.
 <br></br>## No panic. Nothing is broken. Just some rare condition has been hit.
 <br></br>## Try again later. There is likely a solution for this problem.
 <br></br>## Please see News, Blog and User Help Forum.
 <br></br>## Please report this bug!
 <br></br>##
-<br></br>## identifier: $identifier
-<br></br>## IDENTIFIER: $IDENTIFIER
-<br></br>## exit_code: $exit_code
-<br></br>## error_cause: $error_cause
+<br></br>## identifier: ${identifier}
+<br></br>## IDENTIFIER: ${IDENTIFIER}
+<br></br>## exit_code: ${exit_code}
+<br></br>## error_cause: ${error_cause}
 <br></br>##
 <br></br>## For debugging, run:
 <br></br>##
-<br></br>## $SCRIPTNAME --debug
+<br></br>## ${SCRIPTNAME} --debug
 <br></br>##
 <br></br>## Clean the output and report to developers.
 <br></br>#########################################################################</p>"
    else
       local MSG="<p>###############################################################################
-<br></br>## $SCRIPTNAME script bug.
+<br></br>## ${SCRIPTNAME} script bug.
 <br></br>## No panic. Nothing is broken. Just some rare condition has been hit.
 <br></br>## Try again later. There is likely a solution for this problem.
 <br></br>## Please see News, Blog and User Help Forum.
 <br></br>## Please report this bug!
 <br></br>##
-<br></br>## identifier: $identifier
-<br></br>## exit_code: $exit_code
-<br></br>## error_cause: $error_cause
+<br></br>## identifier: ${identifier}
+<br></br>## exit_code: ${exit_code}
+<br></br>## error_cause: ${error_cause}
 <br></br>##
 <br></br>## For debugging, run:
 <br></br>##
-<br></br>## $SCRIPTNAME --debug
+<br></br>## ${SCRIPTNAME} --debug
 <br></br>##
 <br></br>## Clean the output and report to developers.
 <br></br>#########################################################################</p>"
@@ -65,21 +71,21 @@ $error_text"
 
    local command_v_output_exit_code
    command_v_output_exit_code="0"
-   command -v "$output_x" >/dev/null || { command_v_output_exit_code="$?" ; true; };
+   declare -F "${output_x}" >/dev/null || { command_v_output_exit_code="$?" ; true; };
    ## Check if $output command has been already defined. This is not the case,
    ## when the script is terminated very early.
-   if [ "$command_v_output_exit_code" = "0" ]; then
-      if [ "$TITLE" = "" ]; then
+   if [ "${command_v_output_exit_code}" = "0" ]; then
+      if [ "${TITLE}" = "" ]; then
          TITLE="No TITLE defined yet."
       fi
-      $output_x "${output_opts[@]}" --titlex "$TITLE"
-      $output_cli "${output_opts[@]}" --titlecli "$TITLE"
-      $output_x "${output_opts[@]}" --messagex --typex "error" --message "$MSG"
-      $output_cli "${output_opts[@]}" --messagecli --typecli "error" --message "$MSG"
+      ${output_x} "${output_opts[@]}" --titlex "${TITLE}"
+      ${output_cli} "${output_opts[@]}" --titlecli "${TITLE}"
+      ${output_x} "${output_opts[@]}" --messagex --typex "error" --message "${MSG}"
+      ${output_cli} "${output_opts[@]}" --messagecli --typecli "error" --message "${MSG}"
    else
       local stripped_msg
-      stripped_msg="$(sanitize-string -- nolimit "$MSG")"
-      printf '%s\n' "$stripped_msg" >&2
+      stripped_msg="$(sanitize-string -- nolimit "${MSG}")"
+      printf '%s\n' "${stripped_msg}" >&2
    fi
 
    ## }}}
@@ -88,23 +94,23 @@ $error_text"
    ## when the script is terminated very early.
    local command_v_output_exit_code
    command_v_output_exit_code="0"
-   command -v "ex_funct" >/dev/null || { command_v_output_exit_code="$?" ; true; };
-   if [ "$command_v_output_exit_code" = "0" ]; then
+   declare -F "ex_funct" >/dev/null || { command_v_output_exit_code="$?" ; true; };
+   if [ "${command_v_output_exit_code}" = "0" ]; then
       ## ex_funct exists. It is up to ex_funct to exit.
-      echo "$SCRIPTNAME: Error detected. Cleaning up... Exiting..." >&2
+      printf '%s\n' "${SCRIPTNAME}: Error detected. Cleaning up... Exiting..." >&2
       SIGNAL_TYPE="ERR"
       ex_funct || true
-      echo "$SCRIPTNAME: Error! ex_funct did not exit!" >&2
-      echo "$SCRIPTNAME: Exiting..." >&2
-      if [ "$EXIT_CODE" = "" ]; then
+      printf '%s\n' "${SCRIPTNAME}: Error! ex_funct did not exit!" >&2
+      printf '%s\n' "${SCRIPTNAME}: Exiting..." >&2
+      if [ "${EXIT_CODE}" = "" ]; then
          EXIT_CODE="1"
       fi
-      exit "$EXIT_CODE"
+      exit "${EXIT_CODE}"
    fi
 
-   echo "$SCRIPTNAME: Error detected. Skipping ex_funct since not yet load. Exiting..." >&2
-   if [ "$EXIT_CODE" = "" ]; then
+   printf '%s\n' "${SCRIPTNAME}: Error detected. Skipping ex_funct since not yet load. Exiting..." >&2
+   if [ "${EXIT_CODE}" = "" ]; then
       EXIT_CODE="1"
    fi
-   exit "$EXIT_CODE"
+   exit "${EXIT_CODE}"
 }
