@@ -269,7 +269,15 @@ start_progress_bar() {
    ## '${percentage_maybe_add}' below is DELIBERATELY UNQUOTED: it is
    ## either EMPTY or the two words '--percentage <n>'. It must be
    ## word-split either way.
+   ##
+   ## GSETTINGS_BACKEND=memory: a transient progress dialog needs no
+   ## persistent GSettings, so skip the dconf backend entirely. Otherwise
+   ## yad (GTK) tries to create "${XDG_RUNTIME_DIR}/dconf/user"; under a
+   ## caller whose AppArmor profile denies that path (e.g. systemcheck) the
+   ## failed write is logged as a spurious dconf-CRITICAL. The memory backend
+   ## attempts no write.
    # shellcheck disable=SC2086
+   GSETTINGS_BACKEND=memory \
    yad \
       --timeout "86400" \
       --no-markup \
