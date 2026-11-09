@@ -31,6 +31,11 @@ LockPersonality=true
 SystemCallFilter=~memfd_create
 NoExecPaths=/tmp /var/tmp /dev/shm
 
+## Defense-in-depth (separate axis from W^X): NoNewPrivileges blocks this
+## daemon and its children from gaining privileges (setuid/setgid, file
+## capabilities, AppArmor non-subset Px). No child gains privilege.
+NoNewPrivileges=yes
+
 [Install]
 ## Not functional in Qubes.
 ## systemctl --user status graphical-session.target
