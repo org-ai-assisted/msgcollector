@@ -19,6 +19,18 @@ NotifyAccess=all
 WatchdogSec=30
 Restart=always
 
+## W^X hardening (anonymous + file-backed). MemoryDenyWriteExecute denies anon
+## W+X and mprotect/shmat gaining PROT_EXEC; SystemCallArchitectures=native closes
+## the secondary-ABI (i386) bypass; LockPersonality blocks READ_IMPLIES_EXEC;
+## SystemCallFilter=~memfd_create kills the memfd bypass; NoExecPaths marks the
+## shared writable dirs non-executable (file-backed exec). msgdispatcher is bash;
+## its Qt dialog helpers are widget GUIs (no QtWebEngine/QML), no JIT.
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+LockPersonality=true
+SystemCallFilter=~memfd_create
+NoExecPaths=/tmp /var/tmp /dev/shm
+
 [Install]
 ## Not functional in Qubes.
 ## systemctl --user status graphical-session.target
