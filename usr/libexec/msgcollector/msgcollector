@@ -10,6 +10,9 @@ if ! declare -F was_executed >/dev/null; then
    exit 1
 fi
 
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
 if was_executed "${BASH_SOURCE[0]}"; then
    #set -x
    set -o errexit
@@ -658,8 +661,7 @@ collector() {
    ## {{ --progressx
    if [ ! "${progressx}" = "" ]; then
       if ! msgcollector_check "${progressbaridx}"; then
-         error "Variable 'progressbaridx' is empty or invalid."
-         exit 4
+         die 4 "Variable 'progressbaridx' is empty or invalid."
       fi
 
       ## Debugging.
@@ -690,8 +692,7 @@ collector() {
    ## {{ --progressbarx
    if [ "${progressbarx}" = "1" ]; then
       if ! msgcollector_check "${progressbaridx}"; then
-         error "Variable 'progressbaridx' is empty or invalid."
-         exit 4
+         die 4 "Variable 'progressbaridx' is empty or invalid."
       fi
       printf '%s\n' "${parentpid}" > "${msgcollector_run_dir}/${identifier}_${progressbaridx}_parentpid"
       message="$(sanitize-string -- nolimit "${message}")"
@@ -777,8 +778,7 @@ return_status() {
    ## {{ --progressbarx
    if [ "${progressbarx}" = "1" ]; then
       if ! msgcollector_check "${progressbaridx}"; then
-         error "Variable progressbaridx is empty or invalid."
-         exit 4
+         die 4 "Variable progressbaridx is empty or invalid."
       fi
       write_to_file="${msgcollector_run_dir}/${identifier}_${progressbaridx}_progressbarx"
       return_status_file
